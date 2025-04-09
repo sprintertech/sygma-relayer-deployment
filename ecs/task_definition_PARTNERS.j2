@@ -14,7 +14,12 @@
                "containerPort": 9001,
                "hostPort": 9001,
                "protocol": "tcp"
-           }
+            },
+            { 
+               "containerPort": 3000,
+               "hostPort": 3000,
+               "protocol": "tcp"
+            }
          ],
          "essential": true,
          "command": [
@@ -53,10 +58,6 @@
             {
                "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH",
                "value": "/mount/r{{ relayerId }}-top.json"
-            },
-            {
-               "name": "SYG_RELAYER_MPCCONFIG_FROSTKEYSHAREPATH",
-               "value": "/mount/r{{ relayerId }}-frost.keyshare"
             }
          ],
          "mountPoints": [
@@ -82,6 +83,10 @@
             {
               "name": "SYG_CHAINS",
               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/relayer-{{ relayerId }}/SYG_CHAINS"
+            },
+            {
+              "name": "SYG_RELAYER_COINMARKETCAPCONFIG_APIKEY",
+              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/SYG_RELAYER_COINMARKETCAPCONFIG_APIKEY"
             }
          ],
          "logConfiguration": {
