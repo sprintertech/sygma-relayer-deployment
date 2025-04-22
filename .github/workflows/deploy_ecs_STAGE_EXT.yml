@@ -43,7 +43,7 @@ jobs:
             relayerId=${{ matrix.signer_id }}
             awsAccountId=${{ env.AWS_TESTNET }}
             awsRegion=${{ env.AWS_REGION }}
-            relayerName=${{ env.PROJECT_NAME }}
+            solverName=${{ env.PROJECT_NAME }}
             appTag=${{ env.TAG }}
             imageTag=${{ env.IMAGE_VERSION }}
 

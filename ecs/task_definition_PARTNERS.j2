@@ -1,8 +1,8 @@
 {
-   "family": "{{ relayerName }}-{{ relayerId }}-container-{{ TESTNET }}",
+   "family": "{{ solverName }}-{{ relayerId }}-container-{{ TESTNET }}",
    "containerDefinitions": [ 
       { 
-         "name": "{{ relayerName }}-{{ relayerId }}-container-{{ TESTNET }}",
+         "name": "{{ solverName }}-{{ relayerId }}-container-{{ TESTNET }}",
          "image": "ghcr.io/sprintertech/sprinter-signing:{{ set Sprinter release version }}",
          "portMappings": [ 
             { 
@@ -101,7 +101,7 @@
               "tls": "on",
               "line_format": "json",
               "Name": "loki",
-              "labels": "job=fluent-bit,env=testnet,project=sygma,service_name=relayer-{{ relayerId }}-container-TESTNET,image={{ imageTag }}"
+              "labels": "job=fluent-bit,env=testnet,project=sygma,service_name=solver-{{ relayerId }}-container-TESTNET,image={{ imageTag }}"
           },
           "secretOptions": [
               {
@@ -125,7 +125,7 @@
          "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-               "awslogs-group": "/ecs/relayer-{{ relayerId }}-TESTNET",
+               "awslogs-group": "/ecs/{{ solverName }}-{{ relayerId }}-{{ TESTNET }}",
                "awslogs-create-group": "true",
                "awslogs-region": "{{ awsRegion }}",
                "awslogs-stream-prefix": "ecs"
@@ -166,7 +166,7 @@
          "logConfiguration": {
             "logDriver": "awslogs",
                "options": {
-                  "awslogs-group": "/ecs/{{ relayerName }}-{{ relayerId }}-{{ TESTNET }}",
+                  "awslogs-group": "/ecs/{{ solverName }}-{{ relayerId }}-{{ TESTNET }}",
                   "awslogs-create-group": "True",
                   "awslogs-region": "{{ awsRegion }}",
                   "awslogs-stream-prefix": "ecs"
@@ -174,7 +174,7 @@
          }
       }
    ],
-    "executionRoleArn": "arn:aws:iam::{{ awsAccountId }}:role/{{ relayerName }}-{{ relayerId }}-ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::{{ awsAccountId }}:role/{{ solverName }}-{{ relayerId }}-ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "volumes": [
       {
