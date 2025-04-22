@@ -95,8 +95,8 @@ Set the next secret variables in GitHub Secret variables section. They will be u
 Task definition variables are configured as ENV variables for [GitHub actions](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/.github/workflows/deploy_ecs_STAGE_EXT.yml#L11)
 
 For easy reference, the env variables should be Organisation name with the environment to differentiate Signers on the network.
-For `SYG_SOLVER_ENV` use `TESTNET` if it is a testnet instance and `MAINNET` if it is a production. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L47)
-For `SYG_SOLVER_ID` we need to make sure that it is unique for all signers. So make sure that you have consulted with Sprinter team about proper signer id. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L43)
+For `SPRNT_SOLVER_ENV` use `TESTNET` if it is a testnet instance and `MAINNET` if it is a production. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L47)
+For `SPRNT_SOLVER_ID` we need to make sure that it is unique for all signers. So make sure that you have consulted with Sprinter team about proper signer id. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L43)
 
 ### Signer configuration
 
@@ -106,26 +106,26 @@ Now you can create any secrets that you want, and then reference it in the `secr
 - Follow this [Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) doc to create relevant secrets. 
 You should **manually** set this parameter according to the following description
 
-- **SYG_CHAINS** - domain configuration. One configuration for all domains (networks).
+- **SPRNT_CHAINS** - domain configuration. One configuration for all domains (networks).
 
-- **SYG_SOLVER_MPCCONFIG_KEY** - secret libp2p key
+- **SPRNT_SOLVER_MPCCONFIG_KEY** - secret libp2p key
     *This key is used to secure libp2p communication between signers. The format of the key is* RSA 2048 with base64 protobuf encoding.
 
     It is possible to generate a new key by using the CLI command `peer gen-key` from the [signer repository](https://github.com/sprintertech/sprinter-signing).
     This will generate an output LibP2P peer identity and LibP2P private key, you will need both. But for this param use LibP2P private key.
     **Note: keep private key secret**
 
-- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH**
+- **SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH**
     Example: `/mount/r1-top.json` Should be unique per signer. (eg /mount/r1-top.json, /mount/r2-top.json, etc). Should be persistent filesystem.
 
-- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY**
+- **SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY**
     AES secret key that is used to encrypt libp2p network topology.
     In order to obtain this secret key you need to fetch it from Sprinter AWS account using AWS secrets sharing.
 
-- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL**
+- **SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL**
     URL to fetch topology file from. The Sprinter team will provide you with this key.
 
-- **SYG_SOLVER_COINMARKETCAPCONFIG_APIKEY**
+- **SPRNT_SOLVER_COINMARKETCAPCONFIG_APIKEY**
     API key for CoinMarketCap integration.
 
 ### Log Configuration
@@ -273,7 +273,7 @@ See the task Definition section for the integration [here](https://github.com/sp
 
 The Otlp Agent endpoint must be set on the Signers as environment variable
 ```
-               "name": "SYG_SOLVER_OPENTELEMETRYCOLLECTORURL",
+               "name": "SPRNT_SOLVER_OPENTELEMETRYCOLLECTORURL",
                "value": "http://localhost:4318"
 ```
 See [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L38)
