@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_log_group" "logs" {
-  count = var.relayers
+  count = var.solvers
   name              = "/ecs/${var.project_name}-${count.index}-${var.app_tag}"
   retention_in_days = var.log_retention_days
   tags = {

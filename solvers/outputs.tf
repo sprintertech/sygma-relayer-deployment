@@ -1,5 +1,5 @@
 resource "local_file" "dns" {
-  count    = var.relayers
+  count    = var.solvers
   content  = aws_lb.main[count.index].dns_name
   filename = "${path.module}/dns/dns.${count.index}"
 }

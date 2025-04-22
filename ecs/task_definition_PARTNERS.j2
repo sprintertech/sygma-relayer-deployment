@@ -27,7 +27,7 @@
          "--config=env",
          "--config-url={{shared_config_url}}",
          "--name=R{{ relayerId }}",
-         "--blockstore=/mount/relayer{{ relayerId }}/lvldbdata",
+         "--blockstore=/mount/solver{{ relayerId }}/lvldbdata",
          "--latest=true"
          ],
          "environment": [
@@ -36,27 +36,27 @@
                "value": "signers"
            },
            {
-               "name": "SYG_RELAYER_LOGLEVEL",
+               "name": "SYG_SOLVER_LOGLEVEL",
                "value": "debug"
            },
             {
-               "name": "SYG_RELAYER_OPENTELEMETRYCOLLECTORURL",
+               "name": "SYG_SOLVER_OPENTELEMETRYCOLLECTORURL",
                "value": "http://localhost:4318"
             },
             {
-               "name": "SYG_RELAYER_ID",
+               "name": "SYG_SOLVER_ID",
                "value": "{{ relayerId }}"
             },
             {
-               "name": "SYG_RELAYER_ENV",
+               "name": "SYG_SOLVER_ENV",
                "value": {{ env }}
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_KEYSHAREPATH",
+               "name": "SYG_SOLVER_MPCCONFIG_KEYSHAREPATH",
                "value": "/mount/r{{ relayerId }}.keyshare"
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH",
+               "name": "SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH",
                "value": "/mount/r{{ relayerId }}-top.json"
             }
          ],
@@ -69,24 +69,24 @@
          "volumesFrom": [],
          "secrets": [ 
             { 
-               "name": "SYG_RELAYER_MPCCONFIG_KEY",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer-{{ relayerId }}/SYG_RELAYER_MPCCONFIG_KEY"
+               "name": "SYG_SOLVER_MPCCONFIG_KEY",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer-{{ relayerId }}/SYG_SOLVER_MPCCONFIG_KEY"
             },
             { 
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY"
+               "name": "SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY"
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL"
+               "name": "SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL"
             },
             {
               "name": "SYG_CHAINS",
               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer-{{ relayerId }}/SYG_CHAINS"
             },
             {
-              "name": "SYG_RELAYER_COINMARKETCAPCONFIG_APIKEY",
-              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/SYG_RELAYER_COINMARKETCAPCONFIG_APIKEY"
+              "name": "SYG_SOLVER_COINMARKETCAPCONFIG_APIKEY",
+              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/SYG_SOLVER_COINMARKETCAPCONFIG_APIKEY"
             }
          ],
          "logConfiguration": {

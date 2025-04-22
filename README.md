@@ -60,7 +60,7 @@ More details on how to run Terraform [what this video](https://learn.hashicorp.c
 
 #### Signers infra provision
 
-In this repository, we have the folder `relayers`. In that folder run the following commands:
+In this repository, we have the folder `solvers`. In that folder run the following commands:
 ```
 terraform init
 terraform apply
@@ -95,8 +95,8 @@ Set the next secret variables in GitHub Secret variables section. They will be u
 Task definition variables are configured as ENV variables for [GitHub actions](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/.github/workflows/deploy_ecs_STAGE_EXT.yml#L11)
 
 For easy reference, the env variables should be Organisation name with the environment to differentiate Signers on the network.
-For `SYG_RELAYER_ENV` use `TESTNET` if it is a testnet instance and `MAINNET` if it is a production. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L47)
-For `SYG_RELAYER_ID` we need to make sure that it is unique for all signers. So make sure that you have consulted with Sprinter team about proper signer id. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L43)
+For `SYG_SOLVER_ENV` use `TESTNET` if it is a testnet instance and `MAINNET` if it is a production. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L47)
+For `SYG_SOLVER_ID` we need to make sure that it is unique for all signers. So make sure that you have consulted with Sprinter team about proper signer id. Change it [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L43)
 
 ### Signer configuration
 
@@ -108,30 +108,28 @@ You should **manually** set this parameter according to the following descriptio
 
 - **SYG_CHAINS** - domain configuration. One configuration for all domains (networks).
 
-- **SYG_RELAYER_MPCCONFIG_KEY** - secret libp2p key
+- **SYG_SOLVER_MPCCONFIG_KEY** - secret libp2p key
     *This key is used to secure libp2p communication between signers. The format of the key is* RSA 2048 with base64 protobuf encoding.
 
     It is possible to generate a new key by using the CLI command `peer gen-key` from the [signer repository](https://github.com/sprintertech/sprinter-signing).
     This will generate an output LibP2P peer identity and LibP2P private key, you will need both. But for this param use LibP2P private key.
     **Note: keep private key secret**
 
-- **SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH**
+- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH**
     Example: `/mount/r1-top.json` Should be unique per signer. (eg /mount/r1-top.json, /mount/r2-top.json, etc). Should be persistent filesystem.
 
-- **SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY**
+- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY**
     AES secret key that is used to encrypt libp2p network topology.
     In order to obtain this secret key you need to fetch it from Sprinter AWS account using AWS secrets sharing.
 
-- **SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL**
+- **SYG_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL**
     URL to fetch topology file from. The Sprinter team will provide you with this key.
 
-- **SYG_RELAYER_COINMARKETCAPCONFIG_APIKEY**
+- **SYG_SOLVER_COINMARKETCAPCONFIG_APIKEY**
     API key for CoinMarketCap integration.
 
 ### Log Configuration
 Log configuration in `ecs` directory [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L83).<br>
-We use Datadog Log management and is configured [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L110). <br>
-Set your Datadog API Key [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L98)
 
 ### Run the deployment
 After configuration is done, the current pipeline will run on every **push to the main branch**.
@@ -275,7 +273,7 @@ See the task Definition section for the integration [here](https://github.com/sp
 
 The Otlp Agent endpoint must be set on the Signers as environment variable
 ```
-               "name": "SYG_RELAYER_OPENTELEMETRYCOLLECTORURL",
+               "name": "SYG_SOLVER_OPENTELEMETRYCOLLECTORURL",
                "value": "http://localhost:4318"
 ```
 See [here](https://github.com/sprintertech/sygma-relayer-deployment/blob/main/ecs/task_definition_PARTNERS.j2#L38)

@@ -116,7 +116,7 @@ variable "deployment_minimum_healthy_percent" {
   default = 0
 }
 
-variable "signers" {
-  type = number
-  default = 1 //set number of signers
+variable "solvers" {
+  type    = number
+  default = 1
 }
