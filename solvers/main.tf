@@ -9,7 +9,7 @@ terraform {
   #   organization = "ChainSafe"
 
   #   workspaces {
-  #     prefix = "chainbridge-relayer-"
+  #     prefix = "chainbridge-solver-"
   #   }
   # }
 }

@@ -1,9 +1,9 @@
 {
-   "family": "{{ relayerName }}-{{ relayerId }}-container-{{ TESTNET }}",
+   "family": "{{ solverName }}-{{ relayerId }}-container-{{ TESTNET }}",
    "containerDefinitions": [ 
       { 
-         "name": "{{ relayerName }}-{{ relayerId }}-container-{{ TESTNET }}",
-         "image": "ghcr.io/sygmaprotocol/sygma-relayer:{{ set Sygma release version }}",
+         "name": "{{ solverName }}-{{ relayerId }}-container-{{ TESTNET }}",
+         "image": "ghcr.io/sprintertech/sprinter-signing:{{ set Sprinter release version }}",
          "portMappings": [ 
             { 
                "containerPort": 9000,
@@ -14,7 +14,12 @@
                "containerPort": 9001,
                "hostPort": 9001,
                "protocol": "tcp"
-           }
+            },
+            { 
+               "containerPort": 3000,
+               "hostPort": 3000,
+               "protocol": "tcp"
+            }
          ],
          "essential": true,
          "command": [
@@ -22,41 +27,37 @@
          "--config=env",
          "--config-url={{shared_config_url}}",
          "--name=R{{ relayerId }}",
-         "--blockstore=/mount/relayer{{ relayerId }}/lvldbdata",
+         "--blockstore=/mount/solver{{ relayerId }}/lvldbdata",
          "--latest=true"
          ],
          "environment": [
            {
                "name": "DD_SERVICE",
-               "value": "relayers"
+               "value": "signers"
            },
            {
-               "name": "SYG_RELAYER_LOGLEVEL",
+               "name": "SPRNT_SOLVER_LOGLEVEL",
                "value": "debug"
            },
             {
-               "name": "SYG_RELAYER_OPENTELEMETRYCOLLECTORURL",
+               "name": "SPRNT_SOLVER_OPENTELEMETRYCOLLECTORURL",
                "value": "http://localhost:4318"
             },
             {
-               "name": "SYG_RELAYER_ID",
+               "name": "SPRNT_SOLVER_ID",
                "value": "{{ relayerId }}"
             },
             {
-               "name": "SYG_RELAYER_ENV",
+               "name": "SPRNT_SOLVER_ENV",
                "value": {{ env }}
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_KEYSHAREPATH",
+               "name": "SPRNT_SOLVER_MPCCONFIG_KEYSHAREPATH",
                "value": "/mount/r{{ relayerId }}.keyshare"
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH",
+               "name": "SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_PATH",
                "value": "/mount/r{{ relayerId }}-top.json"
-            },
-            {
-               "name": "SYG_RELAYER_MPCCONFIG_FROSTKEYSHAREPATH",
-               "value": "/mount/r{{ relayerId }}-frost.keyshare"
             }
          ],
          "mountPoints": [
@@ -68,20 +69,24 @@
          "volumesFrom": [],
          "secrets": [ 
             { 
-               "name": "SYG_RELAYER_MPCCONFIG_KEY",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/relayer-{{ relayerId }}/SYG_RELAYER_MPCCONFIG_KEY"
+               "name": "SPRNT_SOLVER_MPCCONFIG_KEY",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer-{{ relayerId }}/SPRNT_SOLVER_MPCCONFIG_KEY"
             },
             { 
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/relayer/SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY"
+               "name": "SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_ENCRYPTIONKEY"
             },
             {
-               "name": "SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL",
-               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/relayer/SYG_RELAYER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL"
+               "name": "SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL",
+               "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer/SPRNT_SOLVER_MPCCONFIG_TOPOLOGYCONFIGURATION_URL"
             },
             {
-              "name": "SYG_CHAINS",
-              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/chainbridge/relayers/relayer-{{ relayerId }}/SYG_CHAINS"
+              "name": "SPRNT_CHAINS",
+              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/signer-{{ relayerId }}/SPRNT_CHAINS"
+            },
+            {
+              "name": "SPRNT_SOLVER_COINMARKETCAPCONFIG_APIKEY",
+              "valueFrom": "arn:aws:ssm:{{ awsRegion }}:{{ awsAccountId }}:parameter/sprinter/signers/SPRNT_SOLVER_COINMARKETCAPCONFIG_APIKEY"
             }
          ],
          "logConfiguration": {
@@ -96,7 +101,7 @@
               "tls": "on",
               "line_format": "json",
               "Name": "loki",
-              "labels": "job=fluent-bit,env=testnet,project=sygma,service_name=relayer-{{ relayerId }}-container-TESTNET,image={{ imageTag }}"
+              "labels": "job=fluent-bit,env=testnet,project=sygma,service_name=solver-{{ relayerId }}-container-TESTNET,image={{ imageTag }}"
           },
           "secretOptions": [
               {
@@ -120,7 +125,7 @@
          "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-               "awslogs-group": "/ecs/relayer-{{ relayerId }}-TESTNET",
+               "awslogs-group": "/ecs/{{ solverName }}-{{ relayerId }}-{{ TESTNET }}",
                "awslogs-create-group": "true",
                "awslogs-region": "{{ awsRegion }}",
                "awslogs-stream-prefix": "ecs"
@@ -161,7 +166,7 @@
          "logConfiguration": {
             "logDriver": "awslogs",
                "options": {
-                  "awslogs-group": "/ecs/{{ relayerName }}-{{ relayerId }}-{{ TESTNET }}",
+                  "awslogs-group": "/ecs/{{ solverName }}-{{ relayerId }}-{{ TESTNET }}",
                   "awslogs-create-group": "True",
                   "awslogs-region": "{{ awsRegion }}",
                   "awslogs-stream-prefix": "ecs"
@@ -169,7 +174,7 @@
          }
       }
    ],
-    "executionRoleArn": "arn:aws:iam::{{ awsAccountId }}:role/{{ relayerName }}-{{ relayerId }}-ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::{{ awsAccountId }}:role/{{ solverName }}-{{ relayerId }}-ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "volumes": [
       {

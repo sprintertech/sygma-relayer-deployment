@@ -4,7 +4,7 @@ variable "region" {
 
 variable "project_name" {
   type    = string
-  default = "relayers"  // set project's name
+  default = "solvers"  // set project's name
 }
 
 variable "env" {
