@@ -1,12 +1,12 @@
 resource "aws_ecs_cluster" "main" {
-  name = "relayer-${var.app_tag}"
+  name = "signer-${var.app_tag}"
   tags = {
-    Name = "relayer-${var.app_tag}"
+    Name = "signer-${var.app_tag}"
   }
 }
 
 resource "aws_ecs_task_definition" "main" {
-  count = var.relayers
+  count = var.signers
   network_mode             = "awsvpc"
   family                   = "${var.project_name}-${count.index}-container-${var.app_tag}"
   requires_compatibilities = ["FARGATE"]
@@ -32,6 +32,11 @@ resource "aws_ecs_task_definition" "main" {
           protocol      = "tcp"
           containerPort = 9001
           hostPort      = 9001
+        },
+        {
+          protocol      = "tcp"
+          containerPort = 3000
+          hostPort      = 3000
         }
       ]
     }
@@ -43,7 +48,7 @@ resource "aws_ecs_task_definition" "main" {
 }
 
 resource "aws_ecs_service" "main" {
-  count = var.relayers
+  count = var.signers
   name                               = "${var.project_name}-${count.index}-service-${var.app_tag}"
   cluster                            = aws_ecs_cluster.main.id
   desired_count                      = 1
@@ -75,6 +80,12 @@ resource "aws_ecs_service" "main" {
     container_port   = "9001"
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api[count.index].arn
+    container_name   = "${var.project_name}-${count.index}-container-${var.app_tag}"
+    container_port   = "3000"
+  }
+
   lifecycle {
     ignore_changes = [desired_count, task_definition]
   }
@@ -85,8 +96,9 @@ resource "aws_service_discovery_private_dns_namespace" "ecs-service-namespace" {
   description = "${var.project_name} ${var.app_tag} namespace"
   vpc         = data.aws_vpc.vpc.id
 }
+
 resource "aws_service_discovery_service" "ecs-service-discovery" {
-  count = var.relayers
+  count = var.signers
   name = "${var.project_name}-${count.index}"
 
   dns_config {
@@ -106,7 +118,7 @@ resource "aws_service_discovery_service" "ecs-service-discovery" {
 }
 
 resource "aws_appautoscaling_target" "ecs_target" {
-  count = var.relayers
+  count = var.signers
   max_capacity       = var.app_max_capacity
   min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main[count.index].name}"
@@ -115,7 +127,7 @@ resource "aws_appautoscaling_target" "ecs_target" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_memory" {
-  count = var.relayers
+  count = var.signers
   name               = "memory-autoscaling"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target[count.index].resource_id
@@ -131,7 +143,7 @@ resource "aws_appautoscaling_policy" "ecs_policy_memory" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_policy_cpu" {
-  count = var.relayers
+  count = var.signers
   name               = "cpu-autoscaling"
   policy_type        = "TargetTrackingScaling"
   resource_id        = aws_appautoscaling_target.ecs_target[count.index].resource_id

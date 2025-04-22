@@ -7,7 +7,7 @@ variable "region" {
 
 variable "project_name" {
   type    = string
-  default = "relayers" // set project name, same as the vpc
+  default = "signers" // set project name, same as the vpc
 }
 
 variable "env" {
@@ -116,7 +116,7 @@ variable "deployment_minimum_healthy_percent" {
   default = 0
 }
 
-variable "relayers" {
+variable "signers" {
   type = number
-  default = 1 //set number of relayers
+  default = 1 //set number of signers
 }

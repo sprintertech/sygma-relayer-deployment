@@ -1,5 +1,5 @@
 resource "aws_lb" "main" {
-  count = var.relayers
+  count = var.signers
   name                             = "${var.project_name}-${count.index}-lb-${var.app_tag}"
   internal                         = var.is_lb_internal
   load_balancer_type               = "network"
@@ -10,7 +10,7 @@ resource "aws_lb" "main" {
 }
 
 resource "aws_lb_target_group" "http" {
-  count = var.relayers
+  count = var.signers
   depends_on = [
     aws_lb.main
   ]
@@ -31,7 +31,7 @@ resource "aws_lb_target_group" "http" {
 }
 
 resource "aws_lb_target_group" "tcp" {
-  count = var.relayers
+  count = var.signers
   depends_on = [
     aws_lb.main
   ]
@@ -52,9 +52,30 @@ resource "aws_lb_target_group" "tcp" {
   }
 }
 
+resource "aws_lb_target_group" "api" {
+  count = var.signers
+  depends_on = [
+    aws_lb.main
+  ]
+  name_prefix = var.app_tag
+  port        = 3000
+  protocol    = "TCP"
+  vpc_id      = data.aws_vpc.vpc.id
+  target_type = var.tg_target_type
+
+  health_check {
+    path     = "/health"
+    port     = 3000
+    protocol = "HTTP"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
 resource "aws_lb_listener" "http" {
-  count = var.relayers
+  count = var.signers
   load_balancer_arn = aws_lb.main[count.index].id
   port              = 9001
   protocol          = "TCP"
@@ -66,7 +87,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_lb_listener" "tcp" {
-  count = var.relayers
+  count = var.signers
   load_balancer_arn = aws_lb.main[count.index].id
   port              = var.app_container_port
   protocol          = "TCP"
@@ -77,8 +98,20 @@ resource "aws_lb_listener" "tcp" {
   }
 }
 
+resource "aws_lb_listener" "api" {
+  count = var.signers
+  load_balancer_arn = aws_lb.main[count.index].id
+  port              = 3000
+  protocol          = "TCP"
+  ssl_policy        = ""
+  default_action {
+    target_group_arn = aws_lb_target_group.api[count.index].id
+    type             = "forward"
+  }
+}
+
 resource "aws_lb_listener" "tls" {
-  count = var.relayers
+  count = var.signers
   load_balancer_arn = aws_lb.main[count.index].id
   port              = "443"
   protocol          = "TLS"
@@ -88,5 +121,4 @@ resource "aws_lb_listener" "tls" {
     target_group_arn = aws_lb_target_group.http[count.index].id
     type             = "forward"
   }
-
 }
